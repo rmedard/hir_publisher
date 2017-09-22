@@ -10,7 +10,6 @@ namespace Drupal\hir_publisher\Service;
 
 
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\node\Entity\Node;
 
 class PublisherService {
 
@@ -33,7 +32,7 @@ class PublisherService {
           ->condition('field_advert_expirydate', $date, '<');
         $expired_adverts_ids = $query->execute();
         if (isset($expired_adverts_ids) and count($expired_adverts_ids) > 0){
-            return Node::loadMultiple($expired_adverts_ids);
+            return $storage->loadMultiple($expired_adverts_ids);
         } else {
             return NULL;
         }
