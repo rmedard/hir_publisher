@@ -2,7 +2,9 @@
 
 namespace Drupal\hir_publisher\Plugin\QueueWorker;
 
+use Drupal;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\node\Entity\Node;
 
 /**
  * Created by PhpStorm.
@@ -49,6 +51,18 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
      * @see \Drupal\Core\Cron::processQueues()
      */
     public function processItem($data) {
-        // TODO: Implement processItem() method.
+        $end_of_yesterday = strtotime('-1 days 23:59:59');
+        $query = Drupal::entityQuery('node')
+          ->condition('type', 'advert')
+          ->condition('status', 1)
+          ->condition('field_advert_expirydate', $end_of_yesterday, '<');
+        $expired_adverts_ids = $query->execute();
+        if (isset($expired_adverts_ids) and count($expired_adverts_ids) > 0){
+            $expired_adverts = Node::loadMultiple($expired_adverts_ids);
+            foreach ($expired_adverts as $expired_advert){
+                $expired_advert->setPublished(FALSE);
+                $expired_advert->save();
+            }
+        }
     }
 }
