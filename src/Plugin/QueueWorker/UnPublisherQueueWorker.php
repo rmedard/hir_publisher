@@ -57,6 +57,7 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
             foreach ($expired_adverts as $expired_advert){
                 $expired_advert->setPublished(FALSE);
                 $expired_advert->save();
+                Drupal::logger('hir_publisher')->notice(t('Advert ID: @advert_id unpublished after expiration.', ['@advert_id' => $expired_advert->id()]));
             }
         }
     }
