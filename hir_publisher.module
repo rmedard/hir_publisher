@@ -11,7 +11,7 @@ function hir_publisher_cron() {
     $day_format = 'dmY';
     $request_time = Drupal::time()->getRequestTime();
     $last_unPublish_run = Drupal::state()->get('unpublish.last.run');
-    if (isset($last_unPublish_run)){
+    if (isset($last_unPublish_run) and !empty($last_unPublish_run)){
         if (date($day_format, $last_unPublish_run) !== date($day_format, $request_time)){
             $unPublisher_processor = Drupal::queue('unpublisher_processor');
             $unPublisher_processor->createItem(new stdClass());
