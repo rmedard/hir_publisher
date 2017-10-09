@@ -13,7 +13,7 @@ function hir_publisher_cron() {
     $last_unPublish_run = Drupal::state()->get('unpublish.last.run');
     Drupal::logger('hir_publisher')->debug("UnPublisher triggered. Time: " . $request_time . ". Last unPub: " . $last_unPublish_run);
     if (isset($last_unPublish_run) and !empty($last_unPublish_run)){
-        if (date($day_format, $last_unPublish_run) !== date($day_format, $request_time)){
+        if (date($day_format, $last_unPublish_run) === date($day_format, $request_time)){
             $unPublisher_processor = Drupal::queue('unpublisher_processor');
             $unPublisher_processor->createItem(new stdClass());
             Drupal::state()->set('unpublish.last.run', $request_time);
