@@ -2,7 +2,6 @@
 
 namespace Drupal\hir_publisher\Plugin\QueueWorker;
 
-use DateTime;
 use Drupal;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Queue\QueueWorkerBase;
