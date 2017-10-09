@@ -20,5 +20,6 @@ function hir_publisher_cron() {
         }
     } else {
         Drupal::state()->set('unpublish.last.run', $request_time);
+        Drupal::logger('hir_publisher')->notice('Last unPublish not set');
     }
 }
