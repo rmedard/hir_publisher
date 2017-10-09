@@ -8,6 +8,7 @@
  * Implements hook_cron().
  */
 function hir_publisher_cron() {
+    Drupal::logger('hir_publisher')->debug("UnPublisher triggered");
     $day_format = 'dmY';
     $request_time = Drupal::time()->getRequestTime();
     $last_unPublish_run = Drupal::state()->get('unpublish.last.run');
