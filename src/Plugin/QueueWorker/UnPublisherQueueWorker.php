@@ -2,6 +2,7 @@
 
 namespace Drupal\hir_publisher\Plugin\QueueWorker;
 
+use DateTime;
 use Drupal;
 use Drupal\Core\Queue\QueueWorkerBase;
 
@@ -51,9 +52,10 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
      */
     public function processItem($data) {
         $end_of_yesterday = strtotime('-1 days 23:59:59');
+        new DateTime($end_of_yesterday);
         $publisher_service = Drupal::service('hir_publisher.publisher_service');
         $expired_adverts = $publisher_service->loadExpiredAdverts($end_of_yesterday);
-        Drupal::logger('hir_publisher')->debug('UnPublisher started! Fetch expired before: ' . $end_of_yesterday);
+        Drupal::logger('hir_publisher')->debug('UnPublisher started! Fetch expired before: ' . new Drupal\Core\Datetime\DrupalDateTime('-1 days 23:59:59'));
         if (!empty($expired_adverts)){
             foreach ($expired_adverts as $expired_advert){
                 $expired_advert->setPublished(FALSE);
