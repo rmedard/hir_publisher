@@ -52,7 +52,6 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
      * @see \Drupal\Core\Cron::processQueues()
      */
     public function processItem($data) {
-//        $end_of_yesterday_ = strtotime('-1 days 23:59:59');
         $end_of_yesterday = new DrupalDateTime('-1 days 23:59:59');
         $publisher_service = Drupal::service('hir_publisher.publisher_service');
         $expired_adverts = $publisher_service->loadExpiredAdverts($end_of_yesterday);
