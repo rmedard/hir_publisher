@@ -12,6 +12,7 @@ namespace Drupal\hir_publisher\Service;
 use function count;
 use Drupal;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\node\Entity\Node;
 
 class PublisherService {
 
@@ -30,7 +31,7 @@ class PublisherService {
         $storage = $this->entityTypeManager->getStorage('node');
         $query = $storage->getQuery()
           ->condition('type', 'advert')
-          ->condition('status', 1)
+          ->condition('status', Node::PUBLISHED)
           ->condition('field_advert_expirydate', $date, '<');
         $expired_adverts_ids = $query->execute();
         if (isset($expired_adverts_ids) and count($expired_adverts_ids) > 0){
