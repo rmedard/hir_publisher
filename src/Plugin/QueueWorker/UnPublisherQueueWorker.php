@@ -54,7 +54,7 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
         $publisher_service = Drupal::service('hir_publisher.publisher_service');
         $expired_adverts = $publisher_service->loadExpiredAdverts($end_of_yesterday);
         Drupal::logger('hir_publisher')->debug('UnPublisher started!');
-        if (!is_null($expired_adverts)){
+        if (!empty($expired_adverts)){
             foreach ($expired_adverts as $expired_advert){
                 $expired_advert->setPublished(FALSE);
                 $expired_advert->save();

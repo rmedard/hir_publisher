@@ -9,6 +9,7 @@
 namespace Drupal\hir_publisher\Service;
 
 
+use Drupal;
 use Drupal\Core\Entity\EntityTypeManager;
 
 class PublisherService {
