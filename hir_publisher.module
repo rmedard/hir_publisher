@@ -4,6 +4,9 @@
 * A description of what your module does.
 */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\webform\WebformSubmissionInterface;
+
 /**
  * Implements hook_cron().
  */
@@ -22,4 +25,12 @@ function hir_publisher_cron() {
         Drupal::state()->set('unpublish.last.run', $request_time);
         Drupal::logger('hir_publisher')->notice('Last unPublish set for the first time');
     }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function hir_publisher_WebformSubmission_insert(WebformSubmissionInterface $entity)
+{
+    kint($entity);
 }
