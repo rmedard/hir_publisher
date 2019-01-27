@@ -1,21 +1,23 @@
 <?php
 /**
-* @file
-* A description of what your module does.
-*/
+ * @file
+ * A description of what your module does.
+ */
 
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\node\Entity\Node;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
  * Implements hook_cron().
  */
-function hir_publisher_cron() {
+function hir_publisher_cron()
+{
     $day_format = 'dmY';
     $request_time = Drupal::time()->getRequestTime();
     $last_unPublish_run = Drupal::state()->get('unpublish.last.run');
-    if (isset($last_unPublish_run) and !empty($last_unPublish_run)){
-        if (date($day_format, $last_unPublish_run) !== date($day_format, $request_time)){
+    if (isset($last_unPublish_run) and !empty($last_unPublish_run)) {
+        if (date($day_format, $last_unPublish_run) !== date($day_format, $request_time)) {
             $unPublisher_processor = Drupal::queue('unpublisher_processor');
             $unPublisher_processor->createItem(new stdClass());
             Drupal::state()->set('unpublish.last.run', $request_time);
@@ -32,7 +34,32 @@ function hir_publisher_cron() {
  */
 function hir_publisher_webform_submission_insert(WebformSubmissionInterface $entity)
 {
-    Drupal::logger('Hir Publisher')->debug('In: ' . $entity->id());
-    kint($entity);
-    die();
+    if ($entity->getWebform()->id() == 'property_request_form') {
+        try {
+            Node::create([
+                'type' => 'property_request',
+                'title' => 'PR_' . $entity->id(),
+                'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
+                'field_pr_property_type' => $entity->getElementData('property_type'),
+                'field_pr_equipment' => $entity->getElementData('furnished'),
+                'field_pr_minimum_bedrooms' => $entity->getElementData('minimum_bedrooms'),
+                'field_pr_minimum_bathrooms' => $entity->getElementData('minimum_bathrooms'),
+                'field_pr_more_details' => $entity->getElementData('proreq_description'),
+                'field_pr_area_city_interest' => $entity->getElementData('proreq_area_city'),
+                'field_pr_neighborhood_descr' => $entity->getElementData('describe_what_you_are_looking_for_tubwire_icyo_ushaka'),
+                'field_pr_currency' => $entity->getElementData('proreq_currency'),
+                'field_pr_minimum' => $entity->getElementData('proreq_minimum'),
+                'field_pr_maximum' => $entity->getElementData('proreq_maximum'),
+                'field_pr_payable' => $entity->getElementData('payable'),
+                'field_pr_urgency' => $entity->getElementData('proreq_urgency'),
+                'field_pr_required_service' => $entity->getElementData('we_visit_properties_for_you'),
+                'field_pr_first_name' => $entity->getElementData('proreq_first_name'),
+                'field_pr_last_name' => $entity->getElementData('proreq_last_name'),
+                'field_pr_phone_number' => $entity->getElementData('proreq_phone_number'),
+                'field_pr_email' => $entity->getElementData('proreq_email')
+            ])->save();
+        } catch (EntityStorageException $e) {
+            Drupal::logger('PR_Handler')->error($e->getMessage());
+        }
+    }
 }
