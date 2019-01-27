@@ -60,7 +60,7 @@ class PublisherService
             $query = $storage->getQuery()
                 ->condition('webform_id', 'property_request_form')
                 ->addTag('is_pr_mapped');
-            kint($query);
+            kint($query->__toString());
             die();
             $ids = $query->execute();
             Drupal::logger('hir_publisher')->debug('Ids: ' . json_encode($ids));
