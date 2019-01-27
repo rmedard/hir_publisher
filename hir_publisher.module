@@ -50,6 +50,8 @@ function hir_publisher_install()
     $submissions = $publisherService->loadNonMappedPropertyRequests();
     if (!empty($submissions)) {
         createdMappedPropertyRequest($submissions);
+    } else {
+        Drupal::logger('hir_publisher')->error('No new submissions mapped!!');
     }
 }
 

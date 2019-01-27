@@ -9,13 +9,12 @@
 namespace Drupal\hir_publisher\Service;
 
 
-use function count;
 use Drupal;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
-use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\node\Entity\Node;
+use function count;
 
 class PublisherService
 {
