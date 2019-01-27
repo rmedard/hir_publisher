@@ -60,10 +60,8 @@ class PublisherService
             $query = $storage->getQuery()
                 ->condition('webform_id', 'property_request_form')
                 ->addTag('is_pr_mapped');
-
-            kint($query);
-
             $ids = $query->execute();
+            Drupal::logger('hir_publisher')->debug('ids: ' . json_encode($ids));
             if (isset($ids) and count($ids) > 0) {
                 Drupal::logger('hir_publisher')->info('Ids: ' . json_encode($ids));
             }
