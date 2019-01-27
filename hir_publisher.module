@@ -42,7 +42,7 @@ function hir_publisher_webform_submission_insert(WebformSubmissionInterface $ent
         try {
             Node::create([
                 'type' => 'property_request',
-                'title' => 'PR_' . $entity->id(),
+                'title' => $entity->id(),
                 'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
                 'field_pr_property_type' => $entity->getElementData('property_type'),
                 'field_pr_equipment' => $entity->getElementData('furnished'),
@@ -93,12 +93,9 @@ function hir_publisher_install()
 function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 {
     $connection = \Drupal::database();
-//    $query->join('node', 'n2', 'n.nid = n2.nid');
-//    $query->exists($connection->select('node', 'n2'));
-
-    $subQuery = $connection->select('node', 'n2');
-    $subQuery->addField('n2', 'nid');
+    $subQuery = $connection->select('node_field_data', 'data');
+    $subQuery->addField('data', 'nid');
     $subQuery->condition('type', 'property_request');
-
+    $subQuery->condition('title', 'webform_submission.sid');
     $query->exists($subQuery);
 }
