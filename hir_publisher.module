@@ -33,4 +33,5 @@ function hir_publisher_cron() {
 function hir_publisher_WebformSubmission_insert(WebformSubmissionInterface $entity)
 {
     kint($entity);
+    die();
 }
