@@ -37,36 +37,7 @@ function hir_publisher_cron()
 function hir_publisher_webform_submission_insert(WebformSubmissionInterface $entity)
 {
     if ($entity->getWebform()->id() == 'property_request_form') {
-
-        /* @var \Drupal\hir_publisher\Service\PublisherService */
-        $publisherService = Drupal::service('hir_publisher.publisher_service');
-        $publisherService->loadNonMappedPropertyRequests();
-        try {
-            Node::create([
-                'type' => 'property_request',
-                'title' => 'PR_' . $entity->id(),
-                'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
-                'field_pr_property_type' => $entity->getElementData('property_type'),
-                'field_pr_equipment' => $entity->getElementData('furnished'),
-                'field_pr_minimum_bedrooms' => $entity->getElementData('minimum_bedrooms'),
-                'field_pr_minimum_bathrooms' => $entity->getElementData('minimum_bathrooms'),
-                'field_pr_more_details' => $entity->getElementData('proreq_description'),
-                'field_pr_area_city_interest' => $entity->getElementData('proreq_area_city'),
-                'field_pr_neighborhood_descr' => $entity->getElementData('describe_what_you_are_looking_for_tubwire_icyo_ushaka'),
-                'field_pr_currency' => $entity->getElementData('proreq_currency'),
-                'field_pr_minimum' => $entity->getElementData('proreq_minimum'),
-                'field_pr_maximum' => $entity->getElementData('proreq_maximum'),
-                'field_pr_payable' => $entity->getElementData('payable'),
-                'field_pr_urgency' => $entity->getElementData('proreq_urgency'),
-                'field_pr_required_service' => $entity->getElementData('we_visit_properties_for_you'),
-                'field_pr_first_name' => $entity->getElementData('proreq_first_name'),
-                'field_pr_last_name' => $entity->getElementData('proreq_last_name'),
-                'field_pr_phone_number' => $entity->getElementData('proreq_phone_number'),
-                'field_pr_email' => $entity->getElementData('proreq_email')
-            ])->save();
-        } catch (EntityStorageException $e) {
-            Drupal::logger('PR_Handler')->error($e->getMessage());
-        }
+        createdMappedPropertyRequest(array($entity));
     }
 }
 
@@ -75,7 +46,12 @@ function hir_publisher_webform_submission_insert(WebformSubmissionInterface $ent
  */
 function hir_publisher_install()
 {
-
+    /* @var \Drupal\hir_publisher\Service\PublisherService */
+    $publisherService = Drupal::service('hir_publisher.publisher_service');
+    $submissions = $publisherService->loadNonMappedPropertyRequests();
+    if (!empty($submissions)) {
+        createdMappedPropertyRequest($submissions);
+    }
 }
 
 /**
@@ -87,9 +63,42 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
     $subQuery = $connection->select('node_field_data', 'n')
         ->fields('n', array('nid'))
         ->where('n.type = \'property_request\' AND n.title = concat(\'PR_\', webform_submission.sid)');
-//    $subQuery->fields('data', array('nid'));
-//    $subQuery->where('data.type = \'property_request\' AND data.title = concat(\'PR_\','  . 'webform_submission.sid' . ')');
-//    $subQuery->condition('type', 'property_request');
-//    $subQuery->condition('title', 'concat(\'PR_\','  . $connection->escapeLike('webform_submission.sid') . ')', 'LIKE');
-    $query->exists($subQuery);
+    $query->notExists($subQuery);
+}
+
+/**
+ * @param $submissions array of Webform submissions of type 'Property Request'
+ */
+function createdMappedPropertyRequest($submissions)
+{
+    foreach ($submissions as $entity) {
+        try {
+            if ($entity instanceof WebformSubmissionInterface) {
+                Node::create([
+                    'type' => 'property_request',
+                    'title' => 'PR_' . $entity->id(),
+                    'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
+                    'field_pr_property_type' => $entity->getElementData('property_type'),
+                    'field_pr_equipment' => $entity->getElementData('furnished'),
+                    'field_pr_minimum_bedrooms' => $entity->getElementData('minimum_bedrooms'),
+                    'field_pr_minimum_bathrooms' => $entity->getElementData('minimum_bathrooms'),
+                    'field_pr_more_details' => $entity->getElementData('proreq_description'),
+                    'field_pr_area_city_interest' => $entity->getElementData('proreq_area_city'),
+                    'field_pr_neighborhood_descr' => $entity->getElementData('describe_what_you_are_looking_for_tubwire_icyo_ushaka'),
+                    'field_pr_currency' => $entity->getElementData('proreq_currency'),
+                    'field_pr_minimum' => $entity->getElementData('proreq_minimum'),
+                    'field_pr_maximum' => $entity->getElementData('proreq_maximum'),
+                    'field_pr_payable' => $entity->getElementData('payable'),
+                    'field_pr_urgency' => $entity->getElementData('proreq_urgency'),
+                    'field_pr_required_service' => $entity->getElementData('we_visit_properties_for_you'),
+                    'field_pr_first_name' => $entity->getElementData('proreq_first_name'),
+                    'field_pr_last_name' => $entity->getElementData('proreq_last_name'),
+                    'field_pr_phone_number' => $entity->getElementData('proreq_phone_number'),
+                    'field_pr_email' => $entity->getElementData('proreq_email')
+                ])->save();
+            }
+        } catch (EntityStorageException $e) {
+            Drupal::logger('PR_Handler')->error($e->getMessage());
+        }
+    }
 }
