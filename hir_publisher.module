@@ -63,3 +63,22 @@ function hir_publisher_webform_submission_insert(WebformSubmissionInterface $ent
         }
     }
 }
+
+/**
+ * Implements hook_install().
+ */
+function hir_publisher_install()
+{
+
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create().
+ */
+function hir_publisher_webform_submission_create(WebformSubmissionInterface $entity)
+{
+    if ($entity->getWebform()->id() == 'property_request_form') {
+        kint($entity);
+        die();
+    }
+}
