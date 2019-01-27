@@ -4,6 +4,8 @@
  * A description of what your module does.
  */
 
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\node\Entity\Node;
 use Drupal\webform\WebformSubmissionInterface;
@@ -35,6 +37,8 @@ function hir_publisher_cron()
 function hir_publisher_webform_submission_insert(WebformSubmissionInterface $entity)
 {
     if ($entity->getWebform()->id() == 'property_request_form') {
+        $publisherService = Drupal::service('hir_publisher.publisher_service');
+        $publisherService->loadNonMappedPropertyRequests();
         try {
             Node::create([
                 'type' => 'property_request',
@@ -75,10 +79,20 @@ function hir_publisher_install()
 /**
  * Implements hook_ENTITY_TYPE_create().
  */
-function hir_publisher_webform_submission_create(WebformSubmissionInterface $entity)
+//function hir_publisher_webform_submission_create(WebformSubmissionInterface $entity)
+//{
+//    if ($entity->getWebform()->id() == 'property_request_form') {
+//        kint($entity);
+//        die();
+//    }
+//}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 {
-    if ($entity->getWebform()->id() == 'property_request_form') {
-        kint($entity);
-        die();
-    }
+    $connection = \Drupal::database();
+//    $query->join('node', 'n2', 'n.nid = n2.nid');
+    $query->exists($connection->select('node', 'n2', array('n2.type' => 'property_request')));
 }
