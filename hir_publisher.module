@@ -94,5 +94,5 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 {
     $connection = \Drupal::database();
 //    $query->join('node', 'n2', 'n.nid = n2.nid');
-    $query->exists($connection->select('node', 'n2', array('n2.type' => 'property_request')));
+    $query->exists($connection->select('node', 'n2', array('type' => 'property_request')));
 }
