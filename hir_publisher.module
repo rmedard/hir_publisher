@@ -42,7 +42,7 @@ function hir_publisher_webform_submission_insert(WebformSubmissionInterface $ent
         try {
             Node::create([
                 'type' => 'property_request',
-                'title' => $entity->id(),
+                'title' => 'PR_' . $entity->id(),
                 'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
                 'field_pr_property_type' => $entity->getElementData('property_type'),
                 'field_pr_equipment' => $entity->getElementData('furnished'),
@@ -96,6 +96,6 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
     $subQuery = $connection->select('node_field_data', 'data');
     $subQuery->addField('data', 'nid');
     $subQuery->condition('type', 'property_request');
-    $subQuery->condition('title', 'webform_submission.sid');
+    $subQuery->condition('title', 'PR_'  . $connection->escapeLike('webform_submission.sid'), 'LIKE');
     $query->exists($subQuery);
 }
