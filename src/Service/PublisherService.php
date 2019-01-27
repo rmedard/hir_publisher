@@ -59,7 +59,9 @@ class PublisherService
             $storage = $this->entityTypeManager->getStorage('webform_submission');
             $query = $storage->getQuery()
                 ->condition('webform_id', 'property_request_form')
-                ->addTag('is_pr_mapped')->addTag('debug');
+                ->addTag('is_pr_mapped');
+
+            kint($query);
 
             $ids = $query->execute();
             if (isset($ids) and count($ids) > 0) {
