@@ -77,24 +77,13 @@ function hir_publisher_install()
 }
 
 /**
- * Implements hook_ENTITY_TYPE_create().
- */
-//function hir_publisher_webform_submission_create(WebformSubmissionInterface $entity)
-//{
-//    if ($entity->getWebform()->id() == 'property_request_form') {
-//        kint($entity);
-//        die();
-//    }
-//}
-
-/**
  * Implements hook_query_TAG_alter().
  */
 function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 {
     $connection = \Drupal::database();
     $subQuery = $connection->select('node_field_data', 'data');
-    $subQuery->addField('data', 'nid');
+    $subQuery->fields('data', array('nid'));
     $subQuery->condition('type', 'property_request');
     $subQuery->condition('title', 'PR_'  . $connection->escapeLike('webform_submission.sid'), 'LIKE');
     $query->exists($subQuery);
