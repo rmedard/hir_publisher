@@ -32,6 +32,7 @@ function hir_publisher_cron() {
  */
 function hir_publisher_WebformSubmission_insert(WebformSubmissionInterface $entity)
 {
+    Drupal::logger('Hir Publisher')->debug('In: ' . $entity->id());
     kint($entity);
     die();
 }
