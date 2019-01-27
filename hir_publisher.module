@@ -30,7 +30,7 @@ function hir_publisher_cron() {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function hir_publisher_WebformSubmission_insert(WebformSubmissionInterface $entity)
+function hir_publisher_WebformSubmission_insert(EntityInterface $entity)
 {
     Drupal::logger('Hir Publisher')->debug('In: ' . $entity->id());
     kint($entity);
