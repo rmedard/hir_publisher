@@ -4,7 +4,6 @@
  * A description of what your module does.
  */
 
-use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\node\Entity\Node;
@@ -96,9 +95,10 @@ function createdMappedPropertyRequest($submissions)
                     'field_pr_phone_number' => $entity->getElementData('proreq_phone_number'),
                     'field_pr_email' => $entity->getElementData('proreq_email')
                 ])->save();
+                Drupal::logger('hir_publisher')->info('Property Request node created: PR_' . $entity->id());
             }
         } catch (EntityStorageException $e) {
-            Drupal::logger('PR_Handler')->error($e->getMessage());
+            Drupal::logger('hir_publisher')->error($e->getMessage());
         }
     }
 }
