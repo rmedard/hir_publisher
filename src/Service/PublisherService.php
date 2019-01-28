@@ -56,22 +56,11 @@ class PublisherService
     public function loadNonMappedPropertyRequests()
     {
         try {
-
             $connection = \Drupal::database();
             $selectQuery = $connection->select('webform_submission', 'ws')
-                ->fields('ws', array('sid'))
-//                ->condition('webform_id', 'property_request_form')
-//                ->addTag('is_pr_mapped')
-            ;
+                ->fields('ws', array('sid'));
             $selectQuery->where('webform_id = \'property_request_form\'');
             $selectQuery->addTag('is_pr_mapped');
-
-//            $storage = $this->entityTypeManager->getStorage('webform_submission');
-//
-//            $query = $storage->getQuery()
-//                ->condition('webform_id', 'property_request_form')
-//                ->addTag('is_pr_mapped');
-//            $ids = $query->execute();
             $ids = $selectQuery->execute()->fetchCol();
             if (isset($ids) && count($ids) > 0) {
                 $storage = $this->entityTypeManager->getStorage('webform_submission');
