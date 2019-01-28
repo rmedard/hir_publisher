@@ -66,7 +66,7 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
         ->fields('n', array('nid'))
     ;
     $subQuery->where('n.type = \'property_request\' AND n.title = concat(\'PR_\', webform_submission.sid)');
-    $query->notExists($subQuery);
+    $query->havingNotExists($subQuery);
 }
 
 /**
