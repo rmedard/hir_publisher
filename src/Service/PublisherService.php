@@ -63,6 +63,9 @@ class PublisherService
             $ids = $query->execute();
             if (isset($ids) and count($ids) > 0) {
                 return $storage->loadMultiple($ids);
+            } else {
+                Drupal::logger('hir_publisher')
+                    ->info('No non-mapped submissions found');
             }
         } catch (InvalidPluginDefinitionException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());

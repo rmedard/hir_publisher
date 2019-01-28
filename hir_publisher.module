@@ -28,16 +28,6 @@ function hir_publisher_cron()
         Drupal::state()->set('unpublish.last.run', $request_time);
         Drupal::logger('hir_publisher')->notice('Last unPublish set for the first time');
     }
-
-    /* @var \Drupal\hir_publisher\Service\PublisherService */
-    $publisherService = Drupal::service('hir_publisher.publisher_service');
-    $submissions = $publisherService->loadNonMappedPropertyRequests();
-    if (!empty($submissions)) {
-        Drupal::logger('hir_publisher')->info('Started mapping submissions: ' . count($submissions) . ' found!!');
-        createdMappedPropertyRequest($submissions);
-    } else {
-        Drupal::logger('hir_publisher')->info('No new submissions mapped!!');
-    }
 }
 
 /**
@@ -59,7 +49,8 @@ function hir_publisher_install()
     $publisherService = Drupal::service('hir_publisher.publisher_service');
     $submissions = $publisherService->loadNonMappedPropertyRequests();
     if (!empty($submissions)) {
-        Drupal::logger('hir_publisher')->info('Started mapping submissions: ' . count($submissions) . ' found!!');
+        Drupal::logger('hir_publisher')
+            ->info('Started mapping submissions: ' . count($submissions) . ' found!!');
         createdMappedPropertyRequest($submissions);
     } else {
         Drupal::logger('hir_publisher')->info('No new submissions mapped!!');
