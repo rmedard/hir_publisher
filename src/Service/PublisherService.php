@@ -56,6 +56,7 @@ class PublisherService
     public function loadNonMappedPropertyRequests()
     {
         try {
+
             $storage = $this->entityTypeManager->getStorage('webform_submission');
             $query = $storage->getQuery()
                 ->condition('webform_id', 'property_request_form')
