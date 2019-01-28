@@ -52,8 +52,6 @@ function hir_publisher_install()
         Drupal::logger('hir_publisher')
             ->info('Started mapping submissions: ' . count($submissions) . ' found!!');
         createdMappedPropertyRequest($submissions);
-    } else {
-        Drupal::logger('hir_publisher')->info('No new submissions mapped!!');
     }
 }
 
