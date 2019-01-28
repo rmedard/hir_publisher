@@ -74,11 +74,8 @@ class PublisherService
 //            $ids = $query->execute();
             $ids = $selectQuery->execute()->fetchCol();
             if (isset($ids) && count($ids) > 0) {
-                Drupal::logger('hir_publisher')
-                    ->debug('Ids: ' . json_encode($ids));
                 $storage = $this->entityTypeManager->getStorage('webform_submission');
-//                return $storage->loadMultiple($ids);
-//                return Drupal\webform\WebformSubmissionInterface::loadMultiple($ids);
+                return $storage->loadMultiple($ids);
             } else {
                 Drupal::logger('hir_publisher')
                     ->info('No non-mapped submissions found');
