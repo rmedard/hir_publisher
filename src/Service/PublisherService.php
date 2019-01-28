@@ -57,13 +57,25 @@ class PublisherService
     {
         try {
 
-            $storage = $this->entityTypeManager->getStorage('webform_submission');
-            $query = $storage->getQuery()
-                ->condition('webform_id', 'property_request_form')
-                ->addTag('is_pr_mapped');
-            $ids = $query->execute();
+            $connection = \Drupal::database();
+            $selectQuery = $connection->select('webform_submission', 'ws')
+                ->fields('ws', array('sid'))
+//                ->condition('webform_id', 'property_request_form')
+//                ->addTag('is_pr_mapped')
+            ;
+            $selectQuery->where('webform_id = \'property_request_form\'');
+            $selectQuery->addTag('is_pr_mapped');
+
+//            $storage = $this->entityTypeManager->getStorage('webform_submission');
+//
+//            $query = $storage->getQuery()
+//                ->condition('webform_id', 'property_request_form')
+//                ->addTag('is_pr_mapped');
+//            $ids = $query->execute();
+            $ids = $selectQuery->execute()->fetchAll();
             if (isset($ids) && count($ids) > 0) {
-                return $storage->loadMultiple($ids);
+//                return $storage->loadMultiple($ids);
+                return Drupal\webform\WebformSubmissionInterface::loadMultiple($ids);
             } else {
                 Drupal::logger('hir_publisher')
                     ->info('No non-mapped submissions found');
