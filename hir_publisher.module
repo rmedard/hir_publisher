@@ -97,7 +97,7 @@ function createdMappedPropertyRequest($submissions)
                     'field_pr_phone_number' => $entity->getElementData('proreq_phone_number'),
                     'field_pr_email' => $entity->getElementData('proreq_email')
                 ]);
-                $pr->setRevisionUserId(1);
+                $pr->setOwnerId(1);
                 $pr->save();
                 Drupal::logger('hir_publisher')->info('Property Request node created: PR_' . $entity->id());
             }
