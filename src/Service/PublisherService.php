@@ -72,10 +72,10 @@ class PublisherService
 //                ->condition('webform_id', 'property_request_form')
 //                ->addTag('is_pr_mapped');
 //            $ids = $query->execute();
-            $ids = $selectQuery->execute()->fetchAll();
+            $ids = $selectQuery->execute()->fetchCol();
             if (isset($ids) && count($ids) > 0) {
                 Drupal::logger('hir_publisher')
-                    ->debug('Ids: ' . json_encode(array_values($ids)));
+                    ->debug('Ids: ' . json_encode($ids));
                 $storage = $this->entityTypeManager->getStorage('webform_submission');
 //                return $storage->loadMultiple($ids);
 //                return Drupal\webform\WebformSubmissionInterface::loadMultiple($ids);
