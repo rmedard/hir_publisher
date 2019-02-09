@@ -75,11 +75,11 @@ function createdMappedPropertyRequest($submissions)
     foreach ($submissions as $entity) {
         try {
             if ($entity instanceof WebformSubmissionInterface) {
-                $vowels = array('a','e','i','o','u');
-                $article = in_array($entity->getElementData('property_type'){0}, $vowels) ? 'an' : 'a';
+//                $vowels = array('a','e','i','o','u');
+//                $article = in_array($entity->getElementData('property_type'){0}, $vowels) ? 'an' : 'a';
                 $pr = Node::create([
                     'type' => 'property_request',
-                    'title' => 'Find me ' . $article . ' ' . $entity->getElementData('property_type') . ' for ' . $entity->getElementData('proreq_advert_type'),
+                    'title' => 'Property request: '. ucfirst($entity->getElementData('property_type')) . ' for ' . $entity->getElementData('proreq_advert_type'),
                     'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
                     'field_pr_property_type' => $entity->getElementData('property_type'),
                     'field_pr_equipment' => $entity->getElementData('furnished'),
