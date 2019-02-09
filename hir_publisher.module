@@ -77,7 +77,7 @@ function createdMappedPropertyRequest($submissions)
             if ($entity instanceof WebformSubmissionInterface) {
                 $pr = Node::create([
                     'type' => 'property_request',
-                    'title' => 'PR_' . $entity->id(),
+                    'title' => 'Find me a ' . $entity->getElementData('property_type') . ' for ' . $entity->getElementData('proreq_advert_type'),
                     'field_pr_request_type' => $entity->getElementData('proreq_advert_type'),
                     'field_pr_property_type' => $entity->getElementData('property_type'),
                     'field_pr_equipment' => $entity->getElementData('furnished'),
