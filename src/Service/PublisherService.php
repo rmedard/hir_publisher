@@ -92,6 +92,8 @@ class PublisherService
                     $pr->save();
                     Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $pr->id()]));
                 }
+            } else {
+                Drupal::logger('hir_publisher')->notice(t('No expired PRs found.'));
             }
         } catch (InvalidPluginDefinitionException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());
