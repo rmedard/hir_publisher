@@ -12,6 +12,7 @@ namespace Drupal\hir_publisher\Service;
 use Drupal;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\node\Entity\Node;
 use function count;
@@ -75,5 +76,27 @@ class PublisherService
             Drupal::logger('hir_publisher')->error($e->getMessage());
         }
         return array();
+    }
+
+    public function unPublishExpiredPropertyRequests() {
+        try {
+            $storage = $this->entityTypeManager->getStorage('node');
+            $query = $storage->getQuery()
+                ->condition('type', 'property_request')
+                ->condition('status', Node::PUBLISHED)
+                ->condition('field_pr_expiry_date', new DrupalDateTime(), '<');
+            $prs = $query->execute();
+            if (isset($prs) && count($prs) > 0) {
+                foreach ($storage->loadMultiple($prs) as $pr){
+                    $pr->setPublished(FALSE);
+                    $pr->save();
+                    Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $pr->id()]));
+                }
+            }
+        } catch (InvalidPluginDefinitionException $e) {
+            Drupal::logger('hir_publisher')->error($e->getMessage());
+        } catch (PluginNotFoundException $e) {
+            Drupal::logger('hir_publisher')->error($e->getMessage());
+        }
     }
 }

@@ -28,6 +28,12 @@ function hir_publisher_cron()
         Drupal::state()->set('unpublish.last.run', $request_time);
         Drupal::logger('hir_publisher')->notice('Last unPublish set for the first time');
     }
+
+    /**
+     * UnPublish expired Property Requests
+     */
+    $publisher_service = Drupal::service('hir_publisher.publisher_service');
+    $publisher_service->unPublishExpiredPropertyRequests();
 }
 
 /**
