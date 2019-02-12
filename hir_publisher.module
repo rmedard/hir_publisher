@@ -112,7 +112,7 @@ function createdMappedPropertyRequest($submissions)
                                 <li>If not, click on “<strong>Submit your property”</strong>&nbsp;button to create it online and send it immediately to our customer.</li>
                             </ul>', 'format' => 'full_html'],
                 ]);
-                $pr->setOwnerId(1);
+//                $pr->setOwnerId(1);
                 $pr->save();
                 Drupal::logger('hir_publisher')->info('Property Request node created: PR_' . $entity->id());
             }
