@@ -74,7 +74,7 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 }
 
 /**
- * @param $submissions array of Webform submissions of type 'Property Request'
+ * @param $submissions array of Webform submissions of type Property Request
  */
 function createdMappedPropertyRequest($submissions)
 {
