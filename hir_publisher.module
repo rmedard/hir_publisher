@@ -72,7 +72,7 @@ function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
     $subQuery->fields('n', array('nid'))
         ->innerJoin('node__field_pr_reference', 'pr', 'n.nid=pr.entity_id');
 
-    $subQuery->where('n.type = \'property_request\' AND pr.value = ws.sid');
+    $subQuery->where('n.type = \'property_request\' AND pr.field_pr_reference_value = ws.sid');
     $query->notExists($subQuery);
 }
 
