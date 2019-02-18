@@ -67,9 +67,11 @@ function hir_publisher_install()
 function hir_publisher_query_is_pr_mapped_alter(SelectInterface $query)
 {
     $connection = \Drupal::database();
-    $subQuery = $connection->select('node_field_data', 'n')
-        ->fields('n', array('nid'))
+    $subQuery = $connection->select('node_field_data', 'n');
+    $subQuery->innerJoin('node__field_pr_reference', 'pr', 'n.nid=pr.entity_id');
+    $subQuery->fields('n', array('nid'))
         ->innerJoin('node__field_pr_reference', 'pr', 'n.nid=pr.entity_id');
+
     $subQuery->where('n.type = \'property_request\' AND pr.value = ws.sid');
     $query->notExists($subQuery);
 }
