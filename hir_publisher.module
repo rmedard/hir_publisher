@@ -46,9 +46,9 @@ function hir_publisher_cron()
         ->exists('field_bid_starting_value')
         ->notExists('field_advert_bid_starting_value');
     $or = $query->condition($and1)->condition($and2);
-    $and = $query->condition($or);
+//    $and = $query->condition($or);
 
-    $query->condition($and);
+    $query->condition($or);
 
     $ids = $query->execute();
     if (!empty($ids)) {
