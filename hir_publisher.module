@@ -37,27 +37,27 @@ function hir_publisher_cron()
 
     $query = Drupal::entityTypeManager()->getStorage('node')->getQuery()
         ->condition('type', 'advert')
-        ->condition('status', 1);
-
-    $and1 = $query->andConditionGroup()
-        ->exists('field_bid_security_amount')
-        ->notExists('field_advert_bid_security_amount');
-    $and2 = $query->andConditionGroup()
-        ->exists('field_bid_starting_value')
-        ->notExists('field_advert_bid_starting_value');
-    $or = $query->condition($and1)->condition($and2);
-//    $and = $query->condition($or);
-
-    $query->condition($or);
+        ->condition('status', 1)
+        ->condition('field_advert_type', 'auction');
 
     $ids = $query->execute();
     if (!empty($ids)) {
         $nodes = Node::loadMultiple($ids);
         foreach ($nodes as $node) {
             if ($node instanceof \Drupal\node\NodeInterface) {
-                $node->set('field_advert_bid_security_amount', intval($node->get('field_bid_security_amount')->value));
-                $node->set('field_advert_bid_starting_value', intval($node->get('field_bid_starting_value')->value));
-                $node->save();
+                $modif = false;
+                if (isset($node->get('field_bid_security_amount')->value)) {
+                    $node->set('field_advert_bid_security_amount', intval($node->get('field_bid_security_amount')->value));
+                    $modif = true;
+                }
+                if (isset($node->get('field_bid_starting_value')->value)) {
+                    $node->set('field_advert_bid_starting_value', intval($node->get('field_bid_starting_value')->value));
+                    $modif = true;
+                }
+
+                if ($modif) {
+                    $node->save();
+                }
             }
         }
     }
