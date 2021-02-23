@@ -35,32 +35,6 @@ function hir_publisher_cron()
     $publisher_service = Drupal::service('hir_publisher.publisher_service');
     $publisher_service->unPublishExpiredPropertyRequests();
 
-    $query = Drupal::entityTypeManager()->getStorage('node')->getQuery()
-        ->condition('type', 'advert')
-        ->condition('status', 1)
-        ->condition('field_advert_type', 'auction');
-
-    $ids = $query->execute();
-    if (!empty($ids)) {
-        $nodes = Node::loadMultiple($ids);
-        foreach ($nodes as $node) {
-            if ($node instanceof \Drupal\node\NodeInterface) {
-                $modif = false;
-                if (isset($node->get('field_bid_security_amount')->value)) {
-                    $node->set('field_advert_bid_security_amount', intval($node->get('field_bid_security_amount')->value));
-                    $modif = true;
-                }
-                if (isset($node->get('field_bid_starting_value')->value)) {
-                    $node->set('field_advert_bid_starting_value', intval($node->get('field_bid_starting_value')->value));
-                    $modif = true;
-                }
-
-                if ($modif) {
-                    $node->save();
-                }
-            }
-        }
-    }
 }
 
 /**
