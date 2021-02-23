@@ -34,6 +34,23 @@ function hir_publisher_cron()
      */
     $publisher_service = Drupal::service('hir_publisher.publisher_service');
     $publisher_service->unPublishExpiredPropertyRequests();
+
+    $ids = Drupal::entityTypeManager()->getStorage('node')->getQuery()
+        ->condition('type', 'advert')
+        ->condition('status', 1)
+        ->exists('field_bid_security_amount')
+        ->exists('field_bid_starting_value')
+        ->execute();
+    if (!empty($ids)) {
+        $nodes = Node::loadMultiple($ids);
+        foreach ($nodes as $node) {
+            if ($node instanceof \Drupal\node\NodeInterface) {
+                $node->set('field_advert_bid_security_amount', intval($node->get('field_bid_security_amount')->value));
+                $node->set('field_advert_bid_starting_value', intval($node->get('field_bid_starting_value')->value));
+                $node->save();
+            }
+        }
+    }
 }
 
 /**
