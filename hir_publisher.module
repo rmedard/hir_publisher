@@ -35,12 +35,22 @@ function hir_publisher_cron()
     $publisher_service = Drupal::service('hir_publisher.publisher_service');
     $publisher_service->unPublishExpiredPropertyRequests();
 
-    $ids = Drupal::entityTypeManager()->getStorage('node')->getQuery()
+    $query = Drupal::entityTypeManager()->getStorage('node')->getQuery()
         ->condition('type', 'advert')
-        ->condition('status', 1)
+        ->condition('status', 1);
+
+    $and1 = $query->andConditionGroup()
         ->exists('field_bid_security_amount')
+        ->notExists('field_advert_bid_security_amount');
+    $and2 = $query->andConditionGroup()
         ->exists('field_bid_starting_value')
-        ->execute();
+        ->notExists('field_advert_bid_starting_value');
+    $or = $query->condition($and1)->condition($and2);
+    $and = $query->condition($or);
+
+    $query->condition($and);
+
+    $ids = $query->execute();
     if (!empty($ids)) {
         $nodes = Node::loadMultiple($ids);
         foreach ($nodes as $node) {
