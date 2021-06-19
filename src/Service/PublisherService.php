@@ -13,8 +13,12 @@ use Drupal;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use function count;
 
 class PublisherService
@@ -25,14 +29,14 @@ class PublisherService
     /**
      * PublisherService constructor.
      *
-     * @param \Drupal\Core\Entity\EntityTypeManager $entityTypeManager
+     * @param EntityTypeManager $entityTypeManager
      */
-    public function __construct(EntityTypeManager $entityTypeManager)
+    public function __construct(EntityTypeManagerInterface $entityTypeManager)
     {
         $this->entityTypeManager = $entityTypeManager;
     }
 
-    public function loadExpiredAdverts($date)
+    public function loadExpiredAdverts($date): array
     {
         try {
             $storage = $this->entityTypeManager->getStorage('node');
@@ -46,18 +50,16 @@ class PublisherService
             } else {
                 Drupal::logger('hir_publisher')->debug('No expired adverts found');
             }
-        } catch (InvalidPluginDefinitionException $e) {
-            Drupal::logger('hir_publisher')->error($e->getMessage());
-        } catch (PluginNotFoundException $e) {
+        } catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());
         }
         return array();
     }
 
-    public function loadNonMappedPropertyRequests()
+    public function loadNonMappedPropertyRequests(): array
     {
         try {
-            $connection = \Drupal::database();
+            $connection = Drupal::database();
             $selectQuery = $connection->select('webform_submission', 'ws')
                 ->fields('ws', array('sid'));
             $selectQuery->where('webform_id = \'property_request_form\'');
@@ -70,9 +72,7 @@ class PublisherService
                 Drupal::logger('hir_publisher')
                     ->info('No non-mapped submissions found');
             }
-        } catch (InvalidPluginDefinitionException $e) {
-            Drupal::logger('hir_publisher')->error($e->getMessage());
-        } catch (PluginNotFoundException $e) {
+        } catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());
         }
         return array();
@@ -81,21 +81,22 @@ class PublisherService
     public function unPublishExpiredPropertyRequests() {
         try {
             $storage = $this->entityTypeManager->getStorage('node');
+            $now = new DrupalDateTime('now');
             $query = $storage->getQuery()
                 ->condition('type', 'property_request')
                 ->condition('status', Node::PUBLISHED)
-                ->condition('field_pr_expiry_date', new DrupalDateTime(), '<');
+                ->condition('field_pr_expiry_date', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<');
             $prs = $query->execute();
             if (isset($prs) && count($prs) > 0) {
                 foreach ($storage->loadMultiple($prs) as $pr){
-                    $pr->setPublished(FALSE);
-                    $pr->save();
-                    Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $pr->id()]));
+                    if ($pr instanceof NodeInterface) {
+                        $pr->setUnpublished();
+                        $pr->save();
+                        Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $pr->id()]));
+                    }
                 }
             }
-        } catch (InvalidPluginDefinitionException $e) {
-            Drupal::logger('hir_publisher')->error($e->getMessage());
-        } catch (PluginNotFoundException $e) {
+        } catch (InvalidPluginDefinitionException | PluginNotFoundException | EntityStorageException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());
         }
     }

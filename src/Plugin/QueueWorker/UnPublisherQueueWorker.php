@@ -3,8 +3,12 @@
 namespace Drupal\hir_publisher\Plugin\QueueWorker;
 
 use Drupal;
+use Drupal\Core\Annotation\QueueWorker;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\Core\Queue\RequeueException;
+use Drupal\Core\Queue\SuspendQueueException;
+use Exception;
 
 /**
  * Created by PhpStorm.
@@ -32,14 +36,14 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
      *   The data that was passed to
      *   \Drupal\Core\Queue\QueueInterface::createItem() when the item was queued.
      *
-     * @throws \Drupal\Core\Queue\RequeueException
+     * @throws RequeueException
      *   Processing is not yet finished. This will allow another process to claim
      *   the item immediately.
-     * @throws \Exception
+     * @throws Exception
      *   A QueueWorker plugin may throw an exception to indicate there was a
      *   problem. The cron process will log the exception, and leave the item in
      *   the queue to be processed again later.
-     * @throws \Drupal\Core\Queue\SuspendQueueException
+     * @throws SuspendQueueException
      *   More specifically, a SuspendQueueException should be thrown when a
      *   QueueWorker plugin is aware that the problem will affect all subsequent
      *   workers of its queue. For example, a callback that makes HTTP requests
