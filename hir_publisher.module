@@ -6,6 +6,7 @@
 
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\hir_publisher\Service\PublisherService;
 use Drupal\node\Entity\Node;
 use Drupal\webform\WebformSubmissionInterface;
 
@@ -52,7 +53,7 @@ function hir_publisher_webform_submission_insert(WebformSubmissionInterface $ent
  */
 function hir_publisher_install()
 {
-    /* @var \Drupal\hir_publisher\Service\PublisherService */
+    /* @var PublisherService */
     $publisherService = Drupal::service('hir_publisher.publisher_service');
     $submissions = $publisherService->loadNonMappedPropertyRequests();
     if (!empty($submissions)) {
