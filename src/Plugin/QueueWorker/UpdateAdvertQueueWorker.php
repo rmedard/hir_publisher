@@ -7,6 +7,7 @@ use Drupal\Core\Annotation\QueueWorker;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\TermStorageInterface;
 
 /**
  * @package Drupal\hir_publisher\Plugin\QueueWorker
@@ -25,7 +26,7 @@ class UpdateAdvertQueueWorker extends QueueWorkerBase
     $current_district = $advert->get('field_advert_district')->entity;
     if ($current_district instanceof Term) {
       $termStorage = Drupal::entityTypeManager()->getStorage('taxonomy_term');
-      if ($termStorage instanceof Drupal\taxonomy\TermStorageInterface) {
+      if ($termStorage instanceof TermStorageInterface) {
         $new_district = $termStorage
           ->loadByProperties(['vid' => 'sectors', 'name' => $current_district->getName()]);
         $new_district = reset($new_district);
