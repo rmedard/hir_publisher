@@ -5,6 +5,7 @@
  */
 
 use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\hir_publisher\Service\PublisherService;
 use Drupal\node\Entity\Node;
@@ -20,10 +21,17 @@ function hir_publisher_cron()
     $last_unPublish_run = Drupal::state()->get('unpublish.last.run');
     if (isset($last_unPublish_run) and !empty($last_unPublish_run)) {
         if (date($day_format, $last_unPublish_run) !== date($day_format, $request_time)) {
-            $unPublisher_processor = Drupal::queue('unpublisher_processor');
-            $unPublisher_processor->createItem(new stdClass());
+          $end_of_yesterday = new DrupalDateTime('-1 days 23:59:59');
+          $publisher_service = Drupal::service('hir_publisher.publisher_service');
+          $expired_adverts = $publisher_service->loadExpiredAdverts($end_of_yesterday);
+          if (!empty($expired_adverts)){
             Drupal::state()->set('unpublish.last.run', $request_time);
-            Drupal::logger('hir_publisher')->notice('UnPublishing scheduled!');
+            Drupal::logger('hir_publisher')->notice('UnPublisher started! Fetch expired before: ' . $end_of_yesterday);
+            $unPublisher_processor = Drupal::queue('unpublisher_processor');
+            foreach ($expired_adverts as $expired_advert){
+              $unPublisher_processor->createItem($expired_advert);
+            }
+          }
         }
     } else {
         Drupal::state()->set('unpublish.last.run', $request_time);
@@ -34,8 +42,7 @@ function hir_publisher_cron()
      * UnPublish expired Property Requests
      */
     $publisher_service = Drupal::service('hir_publisher.publisher_service');
-    $publisher_service->unPublishExpiredPropertyRequests();
-
+//    $publisher_service->unPublishExpiredPropertyRequests();
 }
 
 /**

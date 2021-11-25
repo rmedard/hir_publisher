@@ -17,7 +17,6 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use function count;
 
@@ -42,11 +41,11 @@ class PublisherService
             $storage = $this->entityTypeManager->getStorage('node');
             $query = $storage->getQuery()
                 ->condition('type', 'advert')
-                ->condition('status', Node::PUBLISHED)
+                ->condition('status', NodeInterface::PUBLISHED)
                 ->condition('field_advert_expirydate', $date, '<');
             $expired_adverts_ids = $query->execute();
             if (isset($expired_adverts_ids) and count($expired_adverts_ids) > 0) {
-                return $storage->loadMultiple($expired_adverts_ids);
+                return array_values($storage->loadMultiple($expired_adverts_ids));
             } else {
                 Drupal::logger('hir_publisher')->debug('No expired adverts found');
             }
@@ -84,17 +83,20 @@ class PublisherService
             $now = new DrupalDateTime('now');
             $query = $storage->getQuery()
                 ->condition('type', 'property_request')
-                ->condition('status', Node::PUBLISHED)
+                ->condition('status', NodeInterface::PUBLISHED)
                 ->condition('field_pr_expiry_date', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<');
-            $prs = $query->execute();
-            if (isset($prs) && count($prs) > 0) {
-                foreach ($storage->loadMultiple($prs) as $pr){
-                    if ($pr instanceof NodeInterface) {
-                        $pr->setUnpublished();
-                        $pr->save();
-                        Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $pr->id()]));
-                    }
+            $prIds = $query->execute();
+            if (isset($prIds) && count($prIds) > 0) {
+              $prs = $storage->loadMultiple($prIds);
+              if (count($prs) > 0) {
+                foreach ($prs as $prId => $pr){
+                  if ($pr instanceof NodeInterface) {
+                    $pr->setUnpublished();
+                    $pr->save();
+                    Drupal::logger('hir_publisher')->notice(t('PR ID: @pr_id unpublished after expiration.', ['@pr_id' => $prId]));
+                  }
                 }
+              }
             }
         } catch (InvalidPluginDefinitionException | PluginNotFoundException | EntityStorageException $e) {
             Drupal::logger('hir_publisher')->error($e->getMessage());

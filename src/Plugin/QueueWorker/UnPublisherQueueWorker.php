@@ -4,10 +4,10 @@ namespace Drupal\hir_publisher\Plugin\QueueWorker;
 
 use Drupal;
 use Drupal\Core\Annotation\QueueWorker;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Core\Queue\RequeueException;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\node\NodeInterface;
 use Exception;
 
 /**
@@ -55,16 +55,10 @@ class UnPublisherQueueWorker extends QueueWorkerBase {
      * @see \Drupal\Core\Cron::processQueues()
      */
     public function processItem($data) {
-        $end_of_yesterday = new DrupalDateTime('-1 days 23:59:59');
-        $publisher_service = Drupal::service('hir_publisher.publisher_service');
-        $expired_adverts = $publisher_service->loadExpiredAdverts($end_of_yesterday);
-        Drupal::logger('hir_publisher')->debug('UnPublisher started! Fetch expired before: ' . $end_of_yesterday);
-        if (!empty($expired_adverts)){
-            foreach ($expired_adverts as $expired_advert){
-                $expired_advert->setPublished(FALSE);
-                $expired_advert->save();
-                Drupal::logger('hir_publisher')->notice(t('Advert ID: @advert_id unpublished after expiration.', ['@advert_id' => $expired_advert->id()]));
-            }
-        }
+      if ($data instanceof NodeInterface) {
+        $data->setUnpublished();
+        $data->save();
+        Drupal::logger('hir_publisher')->notice(t('Advert ID: @advert_id unpublished after expiration.', ['@advert_id' => $data->id()]));
+      }
     }
 }
