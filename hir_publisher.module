@@ -42,7 +42,7 @@ function hir_publisher_cron()
      * UnPublish expired Property Requests
      */
     $publisher_service = Drupal::service('hir_publisher.publisher_service');
-//    $publisher_service->unPublishExpiredPropertyRequests();
+    $publisher_service->unPublishExpiredPropertyRequests();
 }
 
 /**
