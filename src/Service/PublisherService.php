@@ -39,7 +39,7 @@ class PublisherService
     {
         try {
             $storage = $this->entityTypeManager->getStorage('node');
-            $query = $storage->getQuery()
+            $query = $storage->getQuery()->accessCheck(FALSE)
                 ->condition('type', 'advert')
                 ->condition('status', NodeInterface::PUBLISHED)
                 ->condition('field_advert_expirydate', $date, '<');
