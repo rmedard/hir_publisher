@@ -3,5 +3,5 @@ type: module
 description: 'This HiR module handles publishing and un-publishing of entities.'
 package: RIR Custom Modules
 core_version_requirement: ^10 || ^11
-version: '10.x-1.0'
+version: '1.0.0'
 project: 'hir_publisher'
