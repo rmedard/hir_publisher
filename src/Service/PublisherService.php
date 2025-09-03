@@ -77,7 +77,7 @@ class PublisherService
         return array();
     }
 
-    public function unPublishExpiredPropertyRequests() {
+    public function unPublishExpiredPropertyRequests(): void {
         try {
             $storage = $this->entityTypeManager->getStorage('node');
             $now = new DrupalDateTime('now');
