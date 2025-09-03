@@ -20,8 +20,7 @@ use Drupal\taxonomy\TermStorageInterface;
 class UpdateAdvertQueueWorker extends QueueWorkerBase
 {
 
-  public function processItem($data)
-  {
+  public function processItem($data): void {
     $advert = Node::load($data);
     $current_district = $advert->get('field_advert_district')->entity;
     if ($current_district instanceof Term) {

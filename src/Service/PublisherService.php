@@ -81,7 +81,7 @@ class PublisherService
         try {
             $storage = $this->entityTypeManager->getStorage('node');
             $now = new DrupalDateTime('now');
-            $query = $storage->getQuery()
+            $query = $storage->getQuery()->accessCheck(FALSE)
                 ->condition('type', 'property_request')
                 ->condition('status', NodeInterface::PUBLISHED)
                 ->condition('field_pr_expiry_date', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<');
